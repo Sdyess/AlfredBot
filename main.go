@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/AlfredBot/commands"
 	"github.com/bwmarrin/discordgo"
 )
 
 var (
-	Token string = "TOKEN_HERE"
+	Token = "YOUR_TOKEN_HERE"
 	BotID string
 )
 
@@ -47,15 +48,11 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Content == "!test" {
-		c, err := s.UserChannelCreate(m.Author.ID)
-		if err != nil {
-			println("Unable to open User Channel: ", err)
-			return
-		}
-		s.ChannelMessageSend(c.ID, "testm8")
-		s.ChannelMessageSend(m.ChannelID, "Hello "+m.Author.Username+" ("+m.ChannelID+")")
+	if m.Content[0] != '!' {
+		return
 	}
+
+	commands.ExecuteCommand(s, m.Message)
 
 	if m.Content == "!info" {
 
