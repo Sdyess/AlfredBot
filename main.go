@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/AlfredBot/commands"
 	"github.com/bwmarrin/discordgo"
@@ -53,15 +52,4 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	commands.ExecuteCommand(s, m.Message)
-
-	if m.Content == "!info" {
-
-		message := "```txt\n%s\n%s\n%-16s%-20s\n%-16s%-20s```"
-		message = fmt.Sprintf(message, "Debug Information", strings.Repeat("-", len("Debug Information")), "ChannelID", m.ChannelID, "Author", m.Author.Username)
-		_, _ = s.ChannelMessageSend(m.ChannelID, message)
-	}
-
-	if m.Content == "!deleteme" {
-		s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
-	}
 }
