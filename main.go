@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/AlfredBot/automod"
 	"github.com/AlfredBot/commands"
 	"github.com/bwmarrin/discordgo"
 )
@@ -47,9 +49,13 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Content[0] != '!' {
-		return
+	if m.Content[0] == '!' && strings.Count(m.Content, "!") < 2 {
+		commands.ExecuteCommand(s, m.Message)
 	}
 
-	commands.ExecuteCommand(s, m.Message)
+	if automod.IsWordCensored(m.Message) {
+		s.ChannelMessageSend(m.ChannelID, "NO")
+		s.ChannelMessageDelete(m.ChannelID, m.ID)
+	}
+
 }
