@@ -20,3 +20,11 @@ func IsWordCensored(m *discordgo.Message) bool {
 	}
 	return false
 }
+
+func IsWordOnTimer(m *discordgo.Message) bool {
+	var word = "ian"
+	if strings.Contains(strings.ToLower(m.Content), word) {
+		return true
+	}
+	return false
+}

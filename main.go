@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"strings"
 
+	"time"
+
 	"github.com/AlfredBot/automod"
 	"github.com/AlfredBot/commands"
 	"github.com/bwmarrin/discordgo"
 )
 
 var (
-	Token = "YOUR_TOKEN_HERE"
+	Token = "MjgyNDU2MTIyMzM2NzM5MzMw.C4wSNA.ySm0QJtH7cxrVK5UFwy2_56_IGs"
 	BotID string
 )
 
@@ -56,6 +58,14 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if automod.IsWordCensored(m.Message) {
 		s.ChannelMessageSend(m.ChannelID, "NO")
 		s.ChannelMessageDelete(m.ChannelID, m.ID)
+	}
+
+	if automod.IsWordOnTimer(m.Message) {
+		timer := time.NewTimer(time.Minute)
+		go func() {
+			<-timer.C
+			s.ChannelMessageDelete(m.ChannelID, m.ID)
+		}()
 	}
 
 }
