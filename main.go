@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	Token = "MjgyNDU2MTIyMzM2NzM5MzMw.C4wSNA.ySm0QJtH7cxrVK5UFwy2_56_IGs"
+	Token = "YOUR_TOKEN_HERE"
 	BotID string
 )
 
