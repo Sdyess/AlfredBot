@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-
 	"time"
 
 	"github.com/AlfredBot/automod"
@@ -56,8 +55,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if automod.IsWordCensored(m.Message) {
-		s.ChannelMessageSend(m.ChannelID, "NO")
-		s.ChannelMessageDelete(m.ChannelID, m.ID)
+		s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
 	}
 
 	if automod.IsWordOnTimer(m.Message) {

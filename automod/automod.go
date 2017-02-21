@@ -13,9 +13,12 @@ func IsWordCensored(m *discordgo.Message) bool {
 	words[1] = "brained"
 	words[2] = "dorf"
 
+	tokens := strings.Split(m.Content, " ")
 	for i := 0; i < len(words); i++ {
-		if strings.Contains(m.Content, words[i]) {
-			return true
+		for j := 0; j < len(tokens); j++ {
+			if strings.EqualFold(words[i], tokens[j]) {
+				return true
+			}
 		}
 	}
 	return false
@@ -23,8 +26,11 @@ func IsWordCensored(m *discordgo.Message) bool {
 
 func IsWordOnTimer(m *discordgo.Message) bool {
 	var word = "ian"
-	if strings.Contains(strings.ToLower(m.Content), word) {
-		return true
+	tokens := strings.Split(m.Content, " ")
+	for i := 0; i < len(tokens); i++ {
+		if strings.EqualFold(tokens[i], word) {
+			return true
+		}
 	}
 	return false
 }
