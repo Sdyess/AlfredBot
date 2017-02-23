@@ -15,14 +15,26 @@ import (
 func ExecuteCommand(s *discordgo.Session, m *discordgo.Message) {
 
 	msg := strings.Split(strings.TrimSpace(m.Content), "!")[1]
+
+	if len(msg) > 2 {
+		msg = strings.Split(strings.Split(m.Content, " ")[0], "!")[1]
+	}
+
 	switch msg {
 	case "info":
 		HandleInfoCommand(s, m)
 	case "ping":
 		HandlePingCommand(s, m)
 	case "play":
-		//game := strings.Split(m.Content, " ")
-		//HandlePlayCommand(s, game[2])
+		game := strings.Split(m.Content, " ")
+		var newGame string
+		for i, tmpGame := range game {
+			if i != 0 {
+				newGame += tmpGame + " "
+			}
+		}
+
+		HandlePlayCommand(s, newGame)
 	default:
 		HandleUnknownCommand(s, m, msg)
 	}
@@ -53,10 +65,12 @@ func HandlePingCommand(s *discordgo.Session, m *discordgo.Message) {
 }
 
 //HandlePlayCommand sets now playing status for the bot
-/*func HandlePlayCommand(s *discordgo.Session, game string) {
-	//game := strings.Split(m.Content, " ")[1]
-	//s.UpdateStatus()
-}*/
+func HandlePlayCommand(s *discordgo.Session, game string) {
+	err := s.UpdateStatus(0, game)
+	if err != nil {
+		println("[Error] Issue while updating bot status: ", err)
+	}
+}
 
 //HandleUnknownCommand is the default for any commands not listed
 func HandleUnknownCommand(s *discordgo.Session, m *discordgo.Message, msg string) {
