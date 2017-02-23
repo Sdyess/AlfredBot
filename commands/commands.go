@@ -15,12 +15,14 @@ import (
 func ExecuteCommand(s *discordgo.Session, m *discordgo.Message) {
 
 	msg := strings.Split(strings.TrimSpace(m.Content), "!")[1]
-
 	switch msg {
 	case "info":
 		HandleInfoCommand(s, m)
 	case "ping":
 		HandlePingCommand(s, m)
+	case "play":
+		//game := strings.Split(m.Content, " ")
+		//HandlePlayCommand(s, game[2])
 	default:
 		HandleUnknownCommand(s, m, msg)
 	}
@@ -29,6 +31,12 @@ func ExecuteCommand(s *discordgo.Session, m *discordgo.Message) {
 /*func ExecuteCommandWithArgs() {
 
 }*/
+
+/*
+func hasPermission() bool{
+
+}
+*/
 
 //HandleInfoCommand is the !info command
 func HandleInfoCommand(s *discordgo.Session, m *discordgo.Message) {
@@ -43,6 +51,12 @@ func HandlePingCommand(s *discordgo.Session, m *discordgo.Message) {
 
 	s.ChannelMessageSend(m.ChannelID, "pong")
 }
+
+//HandlePlayCommand sets now playing status for the bot
+/*func HandlePlayCommand(s *discordgo.Session, game string) {
+	//game := strings.Split(m.Content, " ")[1]
+	//s.UpdateStatus()
+}*/
 
 //HandleUnknownCommand is the default for any commands not listed
 func HandleUnknownCommand(s *discordgo.Session, m *discordgo.Message, msg string) {
