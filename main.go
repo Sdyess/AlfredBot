@@ -19,10 +19,13 @@ var (
 
 var db *sql.DB
 var err error
+var t0 time.Time
 
 func main() {
 
-	db, err = sql.Open("mysql", "username:pass@/db")
+	t0 = time.Now()
+
+	db, err = sql.Open("mysql", "username:password@/database")
 
 	if err != nil {
 		fmt.Println("Error connecting to database: ", err)
@@ -62,13 +65,20 @@ func main() {
 
 //func GuildMemberUpdate()
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m == nil {
+		return
+	}
+
 	if m.Author.ID == BotID {
 		return
 	}
 
 	if m.Content[0] == '!' && strings.Count(m.Content, "!") < 2 {
-		commands.ExecuteCommand(s, m.Message)
+
+		commands.ExecuteCommand(s, m.Message, t0)
 	}
+
+	automod.CleanupNudity(s, m.Message)
 
 	if automod.IsWordCensored(m.Message) {
 		err := s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
