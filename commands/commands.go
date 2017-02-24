@@ -42,6 +42,8 @@ func ExecuteCommand(s *discordgo.Session, m *discordgo.Message, t0 time.Time) {
 		}
 
 		HandlePlayCommand(s, newGame)
+	//case "purge":
+	//if(m.Author.)
 	default:
 		HandleUnknownCommand(s, m, msg)
 	}

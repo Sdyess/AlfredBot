@@ -8,6 +8,7 @@ import (
 
 	"github.com/AlfredBot/automod"
 	"github.com/AlfredBot/commands"
+	"github.com/AlfredBot/database"
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -20,6 +21,7 @@ var (
 var db *sql.DB
 var err error
 var t0 time.Time
+var userMap = make(map[uint64]string)
 
 func main() {
 
@@ -57,6 +59,11 @@ func main() {
 		fmt.Println("Error opening connection: ", err)
 	}
 
+	println("Loading Users...")
+	if ok, err := database.LoadDatabaseUsers(db, &userMap); !ok {
+		fmt.Println("[ERROR] Issue while loading users table", err)
+	}
+
 	println("Running!")
 
 	<-make(chan struct{})
@@ -76,15 +83,17 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content[0] == '!' && strings.Count(m.Content, "!") < 2 {
 
 		commands.ExecuteCommand(s, m.Message, t0)
+		return
 	}
 
-	automod.CleanupNudity(s, m.Message)
+	go automod.CleanupNudity(s, m.Message)
 
 	if automod.IsWordCensored(m.Message) {
 		err := s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
 		if err != nil {
 			fmt.Println("[Error] Issue deleting a censored message: ", err)
 		}
+		return
 	}
 
 	if automod.IsWordOnTimer(m.Message, db) {
@@ -96,6 +105,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				fmt.Println("[Error] Issue deleting a timed message: ", err)
 			}
 		}()
+		return
 	}
 
 }

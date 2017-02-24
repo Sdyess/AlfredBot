@@ -5,39 +5,19 @@ import (
 
 	"database/sql"
 	"fmt"
+	"io"
+	"math/rand"
 	"net/http"
 	"os"
 
-	"io"
+	"time"
 
+	"github.com/AlfredBot/database"
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-nude"
 )
 
 var removeableWordsMap = make(map[int]string)
-
-func LoadDatabaseTimers(db *sql.DB) {
-	rows, err := db.Query("SELECT * FROM timer_words")
-
-	if err != nil {
-		fmt.Println("[ERROR] Issue loading censored words: ", err)
-		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var id int
-		var word string
-		err = rows.Scan(&id, &word)
-		if err != nil {
-			fmt.Println("[ERROR] Issue reading rows: ", err)
-		}
-
-		removeableWordsMap[id] = word
-	}
-
-	fmt.Println("[INFO] Censored Words loaded.")
-}
 
 //IsWordCensored (* discordgo.Message) bool
 //Words that match this check are immediately removed from chat
@@ -64,7 +44,7 @@ func IsWordOnTimer(m *discordgo.Message, db *sql.DB) bool {
 
 	if len(removeableWordsMap) == 0 {
 		fmt.Println("Loading timer words table...")
-		LoadDatabaseTimers(db)
+		database.LoadDatabaseTimers(db, &removeableWordsMap)
 	}
 
 	tokens := strings.Split(m.Content, " ")
@@ -89,6 +69,10 @@ func CleanupNudity(s *discordgo.Session, m *discordgo.Message) {
 	var url string
 
 	for _, j := range m.Embeds {
+		if j == nil {
+			fmt.Println("[ERROR]: ", j)
+			return
+		}
 		url = j.URL
 		response, err := http.Get(url)
 		if err != nil {
@@ -96,7 +80,7 @@ func CleanupNudity(s *discordgo.Session, m *discordgo.Message) {
 			return
 		}
 
-		file, err := os.Create("asdf.jpg")
+		file, err := os.Create(GenerateFileName())
 		if err != nil {
 			fmt.Println("[ERROR] Unable to create file ", err)
 			return
@@ -120,4 +104,15 @@ func CleanupNudity(s *discordgo.Session, m *discordgo.Message) {
 		os.Remove(file.Name())
 
 	}
+}
+
+func GenerateFileName() string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	rand.Seed(time.Now().UnixNano())
+
+	b := make([]rune, 5)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
