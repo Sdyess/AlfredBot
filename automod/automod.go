@@ -18,21 +18,26 @@ import (
 )
 
 var removeableWordsMap = make(map[int]string)
+var censoredWordsMap = make(map[int]string)
 
 //IsWordCensored (* discordgo.Message) bool
 //Words that match this check are immediately removed from chat
-func IsWordCensored(m *discordgo.Message) bool {
-	//this will check through a preloaded map eventually
-	var words [3]string
-	words[0] = "dudu"
-	words[1] = "brained"
-	words[2] = "dorf"
+func IsWordCensored(m *discordgo.Message, db *sql.DB) bool {
+	if len(censoredWordsMap) == 0 {
+		fmt.Println("Loading censored words table...")
+		database.LoadDatabaseCensoredWords(db, &censoredWordsMap)
+	}
 
 	tokens := strings.Split(m.Content, " ")
-	for i := 0; i < len(words); i++ {
+	for i, v := range censoredWordsMap {
 		for j := 0; j < len(tokens); j++ {
+			if _, ok := censoredWordsMap[i]; !ok {
+				fmt.Println("[ERROR] Attempt to access index out of bounds during censor search")
+				return false
+			}
 
-			if strings.EqualFold(words[i], tokens[j]) {
+			if strings.EqualFold(v, tokens[j]) {
+				fmt.Printf("\n[LOG] Message erased: %s", m.Content)
 				return true
 			}
 		}
@@ -43,7 +48,7 @@ func IsWordCensored(m *discordgo.Message) bool {
 func IsWordOnTimer(m *discordgo.Message, db *sql.DB) bool {
 
 	if len(removeableWordsMap) == 0 {
-		fmt.Println("Loading timer words table...")
+		fmt.Println("Loading censored words table...")
 		database.LoadDatabaseTimers(db, &removeableWordsMap)
 	}
 
@@ -51,12 +56,12 @@ func IsWordOnTimer(m *discordgo.Message, db *sql.DB) bool {
 	for i, v := range removeableWordsMap {
 		for j := 0; j < len(tokens); j++ {
 			if _, ok := removeableWordsMap[i]; !ok {
-				fmt.Println("[ERROR] Attempt to access index out of bounds during censor search")
+				fmt.Println("[ERROR] Attempt to access index out of bounds during removable search")
 				return false
 			}
 
 			if strings.EqualFold(v, tokens[j]) {
-				fmt.Printf("[LOG] Message queued to be erased: %s", m.Content)
+				fmt.Printf("\n[LOG] Message queued to be erased: %s", m.Content)
 				return true
 			}
 		}
