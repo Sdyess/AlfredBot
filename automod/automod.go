@@ -25,7 +25,9 @@ var censoredWordsMap = make(map[int]string)
 func IsWordCensored(m *discordgo.Message, db *sql.DB) bool {
 	if len(censoredWordsMap) == 0 {
 		fmt.Println("Loading censored words table...")
-		database.LoadDatabaseCensoredWords(db, &censoredWordsMap)
+		if ok, _ := database.LoadDatabaseCensoredWords(db, &censoredWordsMap); !ok {
+			return false
+		}
 	}
 
 	tokens := strings.Split(m.Content, " ")
@@ -48,8 +50,10 @@ func IsWordCensored(m *discordgo.Message, db *sql.DB) bool {
 func IsWordOnTimer(m *discordgo.Message, db *sql.DB) bool {
 
 	if len(removeableWordsMap) == 0 {
-		fmt.Println("Loading censored words table...")
-		database.LoadDatabaseTimers(db, &removeableWordsMap)
+		fmt.Println("Loading removeable words table...")
+		if ok, _ := database.LoadDatabaseTimers(db, &removeableWordsMap); !ok {
+			return false
+		}
 	}
 
 	tokens := strings.Split(m.Content, " ")
@@ -102,11 +106,23 @@ func CleanupNudity(s *discordgo.Session, m *discordgo.Message) {
 				fmt.Println("[ERROR] ", err)
 				return
 			}
-			s.ChannelMessageDelete(m.ChannelID, m.ID)
+			err := s.ChannelMessageDelete(m.ChannelID, m.ID)
+			if err != nil {
+				return
+			}
 		}
-		response.Body.Close()
-		file.Close()
-		os.Remove(file.Name())
+		err = response.Body.Close()
+		if err != nil {
+			return
+		}
+		err = file.Close()
+		if err != nil {
+			return
+		}
+		err = os.Remove(file.Name())
+		if err != nil {
+			return
+		}
 
 	}
 }

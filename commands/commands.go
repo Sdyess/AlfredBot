@@ -66,6 +66,7 @@ func HandleInfoCommand(s *discordgo.Session, m *discordgo.Message, t0 time.Time)
 	channel, err := s.Channel(m.ChannelID)
 	if err != nil {
 		fmt.Println("[ERROR] Issue finding channel by ID: ", err)
+		return
 	}
 
 	channelName := channel.Name
@@ -85,6 +86,7 @@ func HandlePlayCommand(s *discordgo.Session, game string) {
 	err := s.UpdateStatus(0, game)
 	if err != nil {
 		println("[Error] Issue while updating bot status: ", err)
+		return
 	}
 }
 

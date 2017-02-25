@@ -31,6 +31,7 @@ func main() {
 
 	if err != nil {
 		fmt.Println("Error connecting to database: ", err)
+		return
 	}
 	fmt.Println("[INFO] Connected to database")
 
@@ -57,11 +58,13 @@ func main() {
 	err = dg.Open()
 	if err != nil {
 		fmt.Println("Error opening connection: ", err)
+		return
 	}
 
 	println("Loading Users...")
 	if ok, err := database.LoadDatabaseUsers(db, &userMap); !ok {
 		fmt.Println("[ERROR] Issue while loading users table", err)
+		return
 	}
 
 	println("Running!")
@@ -123,6 +126,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			err := s.ChannelMessageDelete(m.ChannelID, m.ID)
 			if err != nil {
 				fmt.Println("[Error] Issue deleting a timed message: ", err)
+				return
 			}
 		}()
 		return
