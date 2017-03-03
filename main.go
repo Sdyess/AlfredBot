@@ -103,6 +103,11 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if m.Content == "" {
+		go automod.CleanupNudity(s, m.Message)
+		return
+	}
+
 	if m.Content[0] == '!' && strings.Count(m.Content, "!") < 2 {
 
 		commands.ExecuteCommand(s, m.Message, t0)
