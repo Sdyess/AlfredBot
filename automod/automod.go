@@ -20,6 +20,18 @@ import (
 var removeableWordsMap = make(map[int]string)
 var censoredWordsMap = make(map[int]string)
 
+func ReloadTables() {
+	for k := range removeableWordsMap {
+		delete(removeableWordsMap, k)
+	}
+
+	for k := range censoredWordsMap {
+		delete(censoredWordsMap, k)
+	}
+
+	fmt.Println("[INFO] Word cache cleared.")
+}
+
 //IsWordCensored (* discordgo.Message) bool
 //Words that match this check are immediately removed from chat
 func IsWordCensored(m *discordgo.Message, db *sql.DB) bool {

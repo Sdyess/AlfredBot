@@ -5,8 +5,13 @@ import (
 	"fmt"
 )
 
-func LoadDatabaseTimers(db *sql.DB, m *map[int]string) (bool, error) {
+type BotInfo struct {
+	status int
+	last   string
+}
 
+func LoadDatabaseTimers(db *sql.DB, m *map[int]string) (bool, error) {
+	fmt.Println("[INFO] Loading Removable Words...")
 	rows, err := db.Query("SELECT * FROM timer_words")
 	if err != nil {
 		return false, err
@@ -73,4 +78,33 @@ func LoadDatabaseCensoredWords(db *sql.DB, m *map[int]string) (bool, error) {
 
 	fmt.Println("[INFO] Censored Words loaded.")
 	return true, nil
+}
+
+func LoadBotInfo(db *sql.DB) (bool, BotInfo, error) {
+
+	var info BotInfo
+
+	rows, err := db.Query("SELECT * FROM bot_info")
+	if err != nil {
+		return false, info, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var lastPlaying string
+		var status int
+		err = rows.Scan(&lastPlaying, &status)
+
+		if err != nil {
+			return false, info, err
+		}
+
+		info.status = status
+		info.last = lastPlaying
+	}
+
+	fmt.Println("[INFO] Bot Info loaded.")
+	return true, info, nil
+
 }
