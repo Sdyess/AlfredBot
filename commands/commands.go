@@ -10,6 +10,7 @@ import (
 
 	"time"
 
+	"github.com/AlfredBot/automod"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -43,7 +44,7 @@ func ExecuteCommand(s *discordgo.Session, m *discordgo.Message, t0 time.Time) {
 
 		HandlePlayCommand(s, newGame)
 	case "reload":
-		HandleReloadCommand(s)
+		HandleReloadCommand(s, m)
 	//case "purge":
 	//if(m.Author.)
 	default:
@@ -113,7 +114,7 @@ func HandleWrongPermissions(s *discordgo.Session, m *discordgo.Message, msg stri
 	s.ChannelMessageSend(c.ID, "The command ` "+msg+" ` is not available to you.")
 }
 
-func HandleReloadCommand(s * discordgo.Session) {
+func HandleReloadCommand(s *discordgo.Session, m *discordgo.Message) {
 	automod.ReloadTables()
-	s.ChannelMessageSend(c.ID, "Database tables have been reloaded!")
+	s.ChannelMessageSend(m.ChannelID, "Database tables have been reloaded!")
 }

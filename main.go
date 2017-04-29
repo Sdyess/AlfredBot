@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -66,6 +67,15 @@ func main() {
 		fmt.Println("[ERROR] Issue while loading users table", err)
 		return
 	}
+
+	println("Starting Webserver...")
+	http.HandleFunc("/", sayhelloName)
+	err := http.ListenAndServe(":9090", nil)
+	if err != nil {
+		fmt.Println("[ERROR] ListenAndServe: ", err)
+	}
+
+	println("Webserver started")
 
 	println("Running!")
 
