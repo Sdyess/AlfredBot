@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -15,7 +14,7 @@ import (
 )
 
 var (
-	Token = "YOUR_TOKEN"
+	Token = ""
 	BotID string
 )
 
@@ -68,15 +67,6 @@ func main() {
 		return
 	}
 
-	println("Starting Webserver...")
-	http.HandleFunc("/", sayhelloName)
-	err := http.ListenAndServe(":9090", nil)
-	if err != nil {
-		fmt.Println("[ERROR] ListenAndServe: ", err)
-	}
-
-	println("Webserver started")
-
 	println("Running!")
 
 	<-make(chan struct{})
@@ -98,6 +88,13 @@ func OnGuildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
 	if err != nil {
 		return
 	}
+
+	//this will be moved to a seperate database loaded messaging system
+	s.ChannelMessageSend(st.ID, "Greetings, my name is Alfred. I'm here to help you get adjusted to the chatroom.")
+	s.ChannelMessageSend(st.ID, "Before chatting with us, I would appreciate it if you took a moment to review the <#278647380679852032> channel")
+	s.ChannelMessageSend(st.ID, "After reviewing the rules, please take another moment and adjust your nickname to your first name.")
+	s.ChannelMessageSend(st.ID, "AlfredBot is a discord bot created specifically for this chat and is an open-source project. If you are interested in helping with the creation and advancement of AlfredBot, please visit https://github.com/Sdyessdev/AlfredBot/")
+
 }
 
 func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
