@@ -3,7 +3,10 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/AlfredBot/automod"
@@ -26,14 +29,21 @@ var userMap = make(map[uint64]string)
 func main() {
 
 	t0 = time.Now()
-
-	db, err = sql.Open("mysql", "username:password@/database")
-
-	if err != nil {
-		fmt.Println("Error connecting to database: ", err)
+	db = database.Connect()
+	if db == nil {
 		return
 	}
-	fmt.Println("[INFO] Connected to database")
+
+	println("Loading Users...")
+	if ok, err := database.LoadDatabaseUsers(db, &userMap); !ok {
+		fmt.Println("[ERROR] Issue while loading users table", err)
+		return
+	}
+
+	loaded := automod.LoadAutomodTables(db)
+	if !loaded {
+		fmt.Println("[ERROR] Automod failed to load tables...")
+	}
 
 	defer db.Close()
 
@@ -61,16 +71,13 @@ func main() {
 		return
 	}
 
-	println("Loading Users...")
-	if ok, err := database.LoadDatabaseUsers(db, &userMap); !ok {
-		fmt.Println("[ERROR] Issue while loading users table", err)
-		return
-	}
+	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
 
-	println("Running!")
-
-	<-make(chan struct{})
-	return
+	// Cleanly close down the Discord session.
+	dg.Close()
 }
 
 //func GuildMemberUpdate()
@@ -108,7 +115,6 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if m.Content == "" {
-		go automod.CleanupNudity(s, m.Message)
 		return
 	}
 
@@ -117,8 +123,6 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		commands.ExecuteCommand(s, m.Message, t0)
 		return
 	}
-
-	go automod.CleanupNudity(s, m.Message)
 
 	if automod.IsWordCensored(m.Message, db) {
 		err := s.ChannelMessageDelete(m.ChannelID, m.Message.ID)

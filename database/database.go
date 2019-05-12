@@ -10,6 +10,17 @@ type BotInfo struct {
 	last   string
 }
 
+func Connect() *sql.DB {
+	db, err := sql.Open("mysql", "root:root@/alfredbot")
+	if err != nil {
+		fmt.Println("[ERROR] Unable to connect to database: ", err)
+		return nil
+	}
+
+	fmt.Println("[INFO] Connected to database.")
+	return db
+}
+
 func LoadDatabaseTimers(db *sql.DB, m *map[int]string) (bool, error) {
 	fmt.Println("[INFO] Loading Removable Words...")
 	rows, err := db.Query("SELECT * FROM timer_words")
