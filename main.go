@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 	"os/signal"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/AlfredBot/automod"
 	"github.com/AlfredBot/commands"
 	"github.com/AlfredBot/database"
+	"github.com/AlfredBot/logger"
 	"github.com/bwmarrin/discordgo"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -36,27 +36,27 @@ func main() {
 
 	println("Loading Users...")
 	if ok, err := database.LoadDatabaseUsers(db, &userMap); !ok {
-		fmt.Println("[ERROR] Issue while loading users table", err)
+		logger.WriteError("Issue while loading users table.", err)
 		return
 	}
 
 	loaded := automod.LoadAutomodTables(db)
 	if !loaded {
-		fmt.Println("[ERROR] Automod failed to load tables...")
+		logger.WriteInfo("Automod failed to load tables.")
 	}
 
 	defer db.Close()
 
 	dg, err := discordgo.New("Bot " + Token)
 	if err != nil {
-		println("Error creating discord session: ", err)
+		logger.WriteError("Error creating discord session.", err)
 		return
 	}
-	fmt.Println("[INFO] Session Created")
+	logger.WriteInfo("Session Created.")
 
 	u, err := dg.User("@me")
 	if err != nil {
-		println("Error obtaining account details: ", err)
+		logger.WriteError("A problem occurred while obtaining account details.", err)
 		return
 	}
 
@@ -67,11 +67,11 @@ func main() {
 
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("Error opening connection: ", err)
+		logger.WriteError("A problem occurred while opening a connection.", err)
 		return
 	}
 
-	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	logger.WriteInfo("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -127,7 +127,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if automod.IsWordCensored(m.Message, db) {
 		err := s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
 		if err != nil {
-			fmt.Println("[Error] Issue deleting a censored message: ", err)
+			logger.WriteError("Issue deleting a censored message.", err)
 		}
 		return
 	}
@@ -138,7 +138,7 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			<-timer.C
 			err := s.ChannelMessageDelete(m.ChannelID, m.ID)
 			if err != nil {
-				fmt.Println("[Error] Issue deleting a timed message: ", err)
+				logger.WriteError("Issue deleting a timed message.", err)
 				return
 			}
 		}()
