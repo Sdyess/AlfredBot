@@ -62,8 +62,8 @@ func main() {
 
 	BotID = u.ID
 
-	dg.AddHandler(OnMessageCreate)
-	dg.AddHandler(OnGuildMemberAdd)
+	dg.AddHandler(messageCreate)
+	dg.AddHandler(messageReactionAdd)
 
 	err = dg.Open()
 	if err != nil {
@@ -81,30 +81,23 @@ func main() {
 }
 
 //func GuildMemberUpdate()
-func OnGuildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
-	if s == nil || g == nil {
-		return
-	}
+// func OnGuildMemberAdd(s *discordgo.Session, g *discordgo.GuildMemberAdd) {
+// 	if s == nil || g == nil {
+// 		return
+// 	}
 
-	var user = g.User
-	if user.ID == BotID {
-		return
-	}
+// 	var user = g.User
+// 	if user.ID == BotID {
+// 		return
+// 	}
 
-	st, err := s.UserChannelCreate(user.ID)
-	if err != nil {
-		return
-	}
+// 	st, err := s.UserChannelCreate(user.ID)
+// 	if err != nil {
+// 		return
+// 	}
+// }
 
-	//this will be moved to a seperate database loaded messaging system
-	s.ChannelMessageSend(st.ID, "Greetings, my name is Alfred. I'm here to help you get adjusted to the chatroom.")
-	s.ChannelMessageSend(st.ID, "Before chatting with us, I would appreciate it if you took a moment to review the <#278647380679852032> channel")
-	s.ChannelMessageSend(st.ID, "After reviewing the rules, please take another moment and adjust your nickname to your first name.")
-	s.ChannelMessageSend(st.ID, "AlfredBot is a discord bot created specifically for this chat and is an open-source project. If you are interested in helping with the creation and advancement of AlfredBot, please visit https://github.com/Sdyessdev/AlfredBot/")
-
-}
-
-func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if s == nil || m == nil {
 		return
@@ -145,4 +138,11 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+}
+
+func messageReactionAdd(s * discordgo.Session, reactMsg * discordgo.MessageReactionAdd) {
+	_, err := s.ChannelMessage(reactMsg.ChannelID, reactMsg.MessageID)
+	if err != nil {
+		logger.WriteError("A problem occurred while getting a message.", err)
+	}
 }

@@ -45,22 +45,15 @@ func ExecuteCommand(s *discordgo.Session, m *discordgo.Message, t0 time.Time) {
 		HandlePlayCommand(s, newGame)
 	case "reload":
 		HandleReloadCommand(s, m)
-	//case "purge":
+	case "purge":
 	//if(m.Author.)
+	case "poll":
+		pollSplit := strings.Join(strings.Split(m.Content, " ")[1:], " ")
+		HandlePollCommand(s, m, pollSplit)
 	default:
 		HandleUnknownCommand(s, m, msg)
 	}
 }
-
-/*func ExecuteCommandWithArgs() {
-
-}*/
-
-/*
-func hasPermission() bool{
-
-}
-*/
 
 //HandleInfoCommand is the !info command
 func HandleInfoCommand(s *discordgo.Session, m *discordgo.Message, t0 time.Time) {
@@ -117,4 +110,8 @@ func HandleWrongPermissions(s *discordgo.Session, m *discordgo.Message, msg stri
 func HandleReloadCommand(s *discordgo.Session, m *discordgo.Message) {
 	automod.ReloadTables()
 	s.ChannelMessageSend(m.ChannelID, "Database tables have been reloaded!")
+}
+
+func HandlePurgeCommand() {
+
 }

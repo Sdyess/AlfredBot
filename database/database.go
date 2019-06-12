@@ -10,6 +10,11 @@ type BotInfo struct {
 	last   string
 }
 
+const loadDatabaseTimersSQL = "SELECT * FROM TIMER_WORDS"
+const loadDatabaseUsersSQL = "SELECT * FROM USERS"
+const loadDatabaseCensorSQL = "SELECT * FROM CENSOR_WORDS"
+const loadDatabaseBotInfoSQL = "SELECT * FROM BOT_INFO"
+
 func Connect() *sql.DB {
 	db, err := sql.Open("mysql", "root:root@/alfredbot")
 	if err != nil {
@@ -23,7 +28,7 @@ func Connect() *sql.DB {
 
 func LoadDatabaseTimers(db *sql.DB, m *map[int]string) (bool, error) {
 	fmt.Println("[INFO] Loading Removable Words...")
-	rows, err := db.Query("SELECT * FROM timer_words")
+	rows, err := db.Query(loadDatabaseTimersSQL)
 	if err != nil {
 		return false, err
 	}
@@ -46,7 +51,7 @@ func LoadDatabaseTimers(db *sql.DB, m *map[int]string) (bool, error) {
 }
 
 func LoadDatabaseUsers(db *sql.DB, m *map[uint64]string) (bool, error) {
-	rows, err := db.Query("SELECT * FROM users")
+	rows, err := db.Query(loadDatabaseUsersSQL)
 	if err != nil {
 		return false, err
 	}
@@ -69,7 +74,7 @@ func LoadDatabaseUsers(db *sql.DB, m *map[uint64]string) (bool, error) {
 }
 
 func LoadDatabaseCensoredWords(db *sql.DB, m *map[int]string) (bool, error) {
-	rows, err := db.Query("SELECT * FROM censor_words")
+	rows, err := db.Query(loadDatabaseCensorSQL)
 	if err != nil {
 		return false, err
 	}
@@ -95,7 +100,7 @@ func LoadBotInfo(db *sql.DB) (bool, BotInfo, error) {
 
 	var info BotInfo
 
-	rows, err := db.Query("SELECT * FROM bot_info")
+	rows, err := db.Query(loadDatabaseBotInfoSQL)
 	if err != nil {
 		return false, info, err
 	}

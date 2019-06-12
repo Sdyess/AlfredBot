@@ -28,7 +28,7 @@ func GetSeverityString(logType LogSeverity) string {
 	}
 }
 
-func Write(logType LogSeverity, message string) {
+func write(logType LogSeverity, message string) {
 	f, err := os.OpenFile("alfredbot.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
 		log.Fatalf("Error opening file: %v", err)
@@ -42,9 +42,9 @@ func Write(logType LogSeverity, message string) {
 }
 
 func WriteError(message string, err error) {
-	Write(ERROR, fmt.Sprintf("%s %s", message, err))
+	write(ERROR, fmt.Sprintf("%s %s", message, err))
 }
 
 func WriteInfo(message string) {
-	Write(INFO, message)
+	write(INFO, message)
 }
