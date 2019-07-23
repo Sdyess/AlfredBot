@@ -1,16 +1,11 @@
 # AlfredBot
 
-AlfredBot is a Discord Bot written in the Go language. The bot currently serves as a moderator of a CompSci discord chat for a university. If you would like to use AlfredBot for your own servers, you can replace the token and database info in his files. The bot will be available to be added to your servers shortly, as long as I'm still hosting it.
+AlfredBot is a Discord bot written in Go.
 
-If you insist on hosting your own version of AlfredBot, you'll need some dependancies to use him properly.
-```
-go get github.com/bwmarrin/discordgo
-go get github.com/go-sql-driver/mysql
-```
+The intention of this bot is to serve as a all-in-one for a streamer with features that streamers are currently using multiple bots to piece together to get what they're looking for.
 
-You will also need 
-`https://github.com/koyachi/go-nude`
-which is not available through go get.
+Current plan is to piece all of the features together and then look at how everything works out performance wise. Going from there, adjustments can be made in how everything is actually pieced together.
 
+All parts are written in small modules, so in the case that the final version of this is too much for the single application to handle, parts can be moved into microservices or a different architecture in order to fulfill it's needs.
 
-Please consider that AlfredBot only has basic abilities and is still a huge work in progress. You can view the milestones for the project to view upcoming features for the program. Documentation will be added throughly when Alfred reaches a halfway point. If you would like to contribute to AlfredBot, feel free to make a pull request at any time.
+Feel free to submit ideas and pull requests, this bot is just an infinite WIP.
