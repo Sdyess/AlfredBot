@@ -7,5 +7,3 @@ The intention of this bot is to serve as a all-in-one for a streamer with featur
 Current plan is to piece all of the features together and then look at how everything works out performance wise. Going from there, adjustments can be made in how everything is actually pieced together.
 
 All parts are written in small modules, so in the case that the final version of this is too much for the single application to handle, parts can be moved into microservices or a different architecture in order to fulfill it's needs.
-
-Feel free to submit ideas and pull requests, this bot is just an infinite WIP.
