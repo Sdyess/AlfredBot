@@ -1,5 +1,6 @@
 # AlfredBot 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Sdyess_AlfredBot&metric=alert_status)](https://sonarcloud.io/dashboard?id=Sdyess_AlfredBot)
+![Go](https://github.com/Sdyess/AlfredBot/workflows/Go/badge.svg)
 
 AlfredBot is a Discord bot written in Go.
 
